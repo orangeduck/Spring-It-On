@@ -15,7 +15,8 @@ void spring_character_update(
     float j1 = a + j0*y;
     float eydt = fast_negexp(y*dt);
 
-    x = eydt*((j1*dt) / y) + dt*v_goal + x;
+    x = eydt*(((-j1)/(y*y)) + ((-j0 - j1*dt)/y)) + 
+        (j1/(y*y)) + j0/y + v_goal * dt + x;
     v = eydt*(j0 + j1*dt) + v_goal;
     a = eydt*(a - j1*y*dt);
 }
@@ -111,8 +112,8 @@ int main(void)
 
         // Update Spring
         
-        float gamepadx = GetGamepadAxisMovement(GAMEPAD_PLAYER1, GAMEPAD_AXIS_LEFT_X);
-        float gamepady = GetGamepadAxisMovement(GAMEPAD_PLAYER1, GAMEPAD_AXIS_LEFT_Y);
+        float gamepadx = GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X);
+        float gamepady = GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y);
         float gamepadmag = sqrtf(gamepadx*gamepadx + gamepady*gamepady);
         
         if (gamepadmag > 0.2f)
