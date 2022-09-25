@@ -28,8 +28,8 @@ int main(void)
 
     //float stiffness = 15.0f;
     //float damping = 2.0f;
-
-    float frequency = 2.0f;
+    //float frequency = 2.0f;
+    float damping_ratio = 1.0f;
     float halflife = 0.1f;
     float dt = 1.0 / 60.0f;
     float timescale = 240.0f;
@@ -64,7 +64,8 @@ int main(void)
         // Spring Damper
         
         //stiffness = GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "stiffness", TextFormat("%5.3f", stiffness), stiffness, 0.01f, 30.0f);
-        frequency = GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "frequency", TextFormat("%5.3f", frequency), frequency, 0.0f, 3.0f);
+        // frequency = GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "frequency", TextFormat("%5.3f", frequency), frequency, 0.0f, 3.0f);
+        damping_ratio = GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "damping ratio", TextFormat("%5.3f", damping_ratio), damping_ratio, 0.0f, 2.0f);
         //damping = GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "damping", TextFormat("%5.3f", damping), damping, 0.01f, 30.0f);
         halflife = GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), halflife, 0.0f, 1.0f);
         dt = GuiSliderBar((Rectangle){ 100, 70, 120, 20 }, "dt", TextFormat("%5.3f", dt), dt, 1.0 / 60.0f, 0.1f);
@@ -76,7 +77,8 @@ int main(void)
         t += dt;
         //spring_damper_bad(x, v, g, 0.0f, stiffness, damping, dt);
         //spring_damper_implicit(x, v, g, 0.0f, stiffness, damping, dt);
-        spring_damper_implicit(x, v, g, 0.0f, frequency, halflife, dt);
+        //spring_damper_implicit(x, v, g, 0.0f, frequency, halflife, dt);
+        spring_damper_implicit_ratio(x, v, g, 0.0f, damping_ratio, halflife, dt);
         //critical_spring_damper_implicit(x, v, g, 0.0f, halflife, dt);
         //simple_spring_damper_implicit(x, v, g, halflife, dt);
         //decay_spring_damper_implicit(x, v, halflife, dt);
@@ -98,7 +100,7 @@ int main(void)
                 Vector2 x_start = {goalOffset - (t - t_prev[i + 0]) * timescale, x_prev[i + 0]};
                 Vector2 x_stop  = {goalOffset - (t - t_prev[i + 1]) * timescale, x_prev[i + 1]};
             
-                DrawLineV(x_start, x_stop, BLUE);                
+                DrawLineV(x_start, x_stop, BLUE);
                 DrawCircleV(x_start, 2, BLUE);
             }
             
