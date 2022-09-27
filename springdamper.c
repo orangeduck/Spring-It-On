@@ -76,12 +76,12 @@ int main(void)
         
         t += dt;
         //spring_damper_bad(x, v, g, 0.0f, stiffness, damping, dt);
-        //spring_damper_implicit(x, v, g, 0.0f, stiffness, damping, dt);
-        //spring_damper_implicit(x, v, g, 0.0f, frequency, halflife, dt);
-        spring_damper_implicit_ratio(x, v, g, 0.0f, damping_ratio, halflife, dt);
-        //critical_spring_damper_implicit(x, v, g, 0.0f, halflife, dt);
-        //simple_spring_damper_implicit(x, v, g, halflife, dt);
-        //decay_spring_damper_implicit(x, v, halflife, dt);
+        //spring_damper_exact(x, v, g, 0.0f, stiffness, damping, dt);
+        //spring_damper_exact(x, v, g, 0.0f, frequency, halflife, dt);
+        spring_damper_exact_ratio(x, v, g, 0.0f, damping_ratio, halflife, dt);
+        //critical_spring_damper_exact(x, v, g, 0.0f, halflife, dt);
+        //simple_spring_damper_exact(x, v, g, halflife, dt);
+        //decay_spring_damper_exact(x, v, halflife, dt);
         
         x_prev[0] = x;
         v_prev[0] = v;      

@@ -85,7 +85,7 @@ int main(void)
         
         t += dt;
         
-        simple_spring_damper_implicit(x, v, g, halflife, dt);
+        simple_spring_damper_exact(x, v, g, halflife, dt);
         
         x_prev[0] = x;
         v_prev[0] = v;      

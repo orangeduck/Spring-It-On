@@ -18,7 +18,7 @@ void inertialize_update(
     float halflife,
     float dt)
 {
-    decay_spring_damper_implicit(off_x, off_v, halflife, dt);
+    decay_spring_damper_exact(off_x, off_v, halflife, dt);
     out_x = in_x + off_x;
     out_v = in_v + off_v;
 }

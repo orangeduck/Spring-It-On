@@ -49,14 +49,14 @@ float damper_exponential(
 } 
 
 /*
-float damper_implicit(float x, float g, float halflife, float dt)
+float damper_exact(float x, float g, float halflife, float dt)
 {
     return lerp(x, g, 1.0f - powf(2, -dt / halflife));
 }
 */
 
 /*
-float damper_implicit(float x, float g, float halflife, float dt, float eps=1e-5f)
+float damper_exact(float x, float g, float halflife, float dt, float eps=1e-5f)
 {
     return lerp(x, g, 1.0f - expf(-(0.69314718056f * dt) / (halflife + eps)));
 }
@@ -67,7 +67,7 @@ float fast_negexp(float x)
     return 1.0f / (1.0f + x + 0.48f*x*x + 0.235f*x*x*x);
 }
 
-float damper_implicit(float x, float g, float halflife, float dt, float eps=1e-5f)
+float damper_exact(float x, float g, float halflife, float dt, float eps=1e-5f)
 {
     return lerp(x, g, 1.0f - fast_negexp((0.69314718056f * dt) / (halflife + eps)));
 }
@@ -101,7 +101,7 @@ float squaref(float x)
 }
 
 /*
-void spring_damper_implicit(
+void spring_damper_exact(
     float& x, 
     float& v, 
     float x_goal, 
@@ -131,7 +131,7 @@ void spring_damper_implicit(
 */
 
 /*
-void spring_damper_implicit(
+void spring_damper_exact(
     float& x, 
     float& v, 
     float x_goal, 
@@ -217,7 +217,7 @@ float critical_frequency(float halflife)
     return stiffness_to_frequency(squaref(halflife_to_damping(halflife)) / 4.0f);
 }
 
-void spring_damper_implicit(
+void spring_damper_exact(
     float& x, 
     float& v, 
     float x_goal, 
@@ -282,7 +282,7 @@ float damping_ratio_to_damping(float ratio, float stiffness)
     return ratio * 2.0f * sqrtf(stiffness);
 }
 
-void spring_damper_implicit_ratio(
+void spring_damper_exact_ratio(
     float& x, 
     float& v, 
     float x_goal, 
@@ -340,7 +340,7 @@ void spring_damper_implicit_ratio(
 
 //--------------------------------------
 
-void critical_spring_damper_implicit(
+void critical_spring_damper_exact(
     float& x, 
     float& v, 
     float x_goal, 
@@ -361,7 +361,7 @@ void critical_spring_damper_implicit(
     v = eydt*(v - j1*y*dt);
 }
 
-void simple_spring_damper_implicit(
+void simple_spring_damper_exact(
     float& x, 
     float& v, 
     float x_goal, 
@@ -377,7 +377,7 @@ void simple_spring_damper_implicit(
     v = eydt*(v - j1*y*dt);
 }
 
-void decay_spring_damper_implicit(
+void decay_spring_damper_exact(
     float& x, 
     float& v, 
     float halflife, 

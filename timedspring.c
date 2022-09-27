@@ -2,7 +2,7 @@
 
 //--------------------------------------
 
-void timed_spring_damper_implicit(
+void timed_spring_damper_exact(
     float& x,
     float& v,
     float& xi,
@@ -20,7 +20,7 @@ void timed_spring_damper_implicit(
     float x_goal_future = t_goal_future < t_goal ?
         xi + v_goal * t_goal_future : x_goal;
         
-    simple_spring_damper_implicit(x, v, x_goal_future, halflife, dt);
+    simple_spring_damper_exact(x, v, x_goal_future, halflife, dt);
     
     xi += v_goal * dt;
 }
@@ -115,7 +115,7 @@ int main(void)
         ti -= dt;
         ti = ti < 0.0f ? 0.0f : ti;
         
-        timed_spring_damper_implicit(x, v, xi, g, ti, halflife, dt);
+        timed_spring_damper_exact(x, v, xi, g, ti, halflife, dt);
         
         x_prev[0] = x;
         v_prev[0] = v;      

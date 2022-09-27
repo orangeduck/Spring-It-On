@@ -110,7 +110,7 @@ int main(void)
         
         t += dt;
         
-        spring_damper_implicit(x, v, g, 0.0f, frequency, halflife, dt);
+        spring_damper_exact(x, v, g, 0.0f, frequency, halflife, dt);
         
         x_prev[0] = x;
         v_prev[0] = v;      

@@ -2,7 +2,7 @@
 
 //--------------------------------------
 
-void double_spring_damper_implicit(
+void double_spring_damper_exact(
     float& x, 
     float& v, 
     float& xi,
@@ -11,8 +11,8 @@ void double_spring_damper_implicit(
     float halflife, 
     float dt)
 {
-    simple_spring_damper_implicit(xi, vi, x_goal, 0.5f * halflife, dt);
-    simple_spring_damper_implicit(x, v, xi, 0.5f * halflife, dt);
+    simple_spring_damper_exact(xi, vi, x_goal, 0.5f * halflife, dt);
+    simple_spring_damper_exact(x, v, xi, 0.5f * halflife, dt);
 }
 
 //--------------------------------------
@@ -97,7 +97,7 @@ int main(void)
         
         t += dt;
         
-        double_spring_damper_implicit(x, v, xi, vi, g, halflife, dt);
+        double_spring_damper_exact(x, v, xi, vi, g, halflife, dt);
         
         x_prev[0] = x;
         v_prev[0] = v;      

@@ -71,7 +71,7 @@ int main(void)
         //x = damper(x, g, factor);
         //x = damper_bad(x, g, damping, dt);
         //x = damper_exponential(x, g, damping, dt);
-        x = damper_implicit(x, g, halflife, dt);
+        x = damper_exact(x, g, halflife, dt);
         
         x_prev[0] = x;
         t_prev[0] = t;

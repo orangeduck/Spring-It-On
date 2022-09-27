@@ -113,8 +113,8 @@ int main(void)
                piecewise_interpolation(goalx, goalvx, (float)i / (subsamples - 1), ctrlx, CTRL_MAX);
                piecewise_interpolation(goaly, goalvy, (float)i / (subsamples - 1), ctrly, CTRL_MAX);
                
-               spring_damper_implicit(sx, svx, goalx, goalvx, halflife, frequency, (float)CTRL_MAX / subsamples);
-               spring_damper_implicit(sy, svy, goaly, goalvy, halflife, frequency, (float)CTRL_MAX / subsamples);
+               spring_damper_exact(sx, svx, goalx, goalvx, halflife, frequency, (float)CTRL_MAX / subsamples);
+               spring_damper_exact(sy, svy, goaly, goalvy, halflife, frequency, (float)CTRL_MAX / subsamples);
                
                Vector2 stop = {sx, sy};
                
