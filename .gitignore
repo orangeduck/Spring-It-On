@@ -1,0 +1,9 @@
+# CLion
+.idea
+cmake-build-*
+
+# CMake
+build
+
+# Raygui
+raygui.h
