@@ -20,6 +20,7 @@ SOURCE = \
     smoothing.c \
     controller.c \
     inertialization.c \
+    tracking.c \
     interpolation.c \
     resonance.c \
     timedspring.c \

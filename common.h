@@ -14,6 +14,11 @@ float lerp(float x, float y, float a)
     return (1.0f - a) * x + a * y;
 }
 
+float clamp(float x, float minimum, float maximum)
+{
+    return x > maximum ? maximum : x < minimum ? minimum : x;
+}
+
 //--------------------------------------
 
 float damper(float x, float g, float factor)
