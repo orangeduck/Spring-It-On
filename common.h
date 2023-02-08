@@ -135,8 +135,7 @@ void spring_damper_exact(
 }
 */
 
-/*
-void spring_damper_exact(
+void spring_damper_exact_stiffness_damping(
     float& x, 
     float& v, 
     float x_goal, 
@@ -190,7 +189,6 @@ void spring_damper_exact(
         v = -y0*j0*ey0dt - y1*j1*ey1dt;
     }
 }
-*/
 
 float halflife_to_damping(float halflife, float eps = 1e-5f)
 {
