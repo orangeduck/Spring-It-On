@@ -20,11 +20,13 @@ SOURCE = \
     smoothing.c \
     controller.c \
     inertialization.c \
+    deadblending.c \
+    tracking.c \
     interpolation.c \
     resonance.c \
     timedspring.c \
     velocityspring.c \
-    doublespring.c
+    doublespring.c 
 	
 EXECUTABLE = $(SOURCE:.c=$(EXT))
 

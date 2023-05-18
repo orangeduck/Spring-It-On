@@ -14,6 +14,21 @@ float lerp(float x, float y, float a)
     return (1.0f - a) * x + a * y;
 }
 
+float clamp(float x, float minimum, float maximum)
+{
+    return x > maximum ? maximum : x < minimum ? minimum : x;
+}
+
+float max(float x, float y)
+{
+    return x > y ? x : y;
+}
+
+float min(float x, float y)
+{
+    return x < y ? x : y;
+}
+
 //--------------------------------------
 
 float damper(float x, float g, float factor)
@@ -70,6 +85,11 @@ float fast_negexp(float x)
 float damper_exact(float x, float g, float halflife, float dt, float eps=1e-5f)
 {
     return lerp(x, g, 1.0f - fast_negexp((0.69314718056f * dt) / (halflife + eps)));
+}
+
+float damper_decay_exact(float x, float halflife, float dt, float eps=1e-5f)
+{
+    return x * fast_negexp((0.69314718056f * dt) / (halflife + eps));
 }
 
 //--------------------------------------
@@ -130,8 +150,7 @@ void spring_damper_exact(
 }
 */
 
-/*
-void spring_damper_exact(
+void spring_damper_exact_stiffness_damping(
     float& x, 
     float& v, 
     float x_goal, 
@@ -185,7 +204,6 @@ void spring_damper_exact(
         v = -y0*j0*ey0dt - y1*j1*ey1dt;
     }
 }
-*/
 
 float halflife_to_damping(float halflife, float eps = 1e-5f)
 {
