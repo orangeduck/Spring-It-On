@@ -96,13 +96,13 @@ int main(void)
             frequency = resonant_frequency(goal_frequency, halflife);
         }
 
-        halflife = GuiSliderBar((Rectangle){ 125, 20, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), halflife, 0.0f, 4.0f);
-        frequency = GuiSliderBar((Rectangle){ 125, 45, 120, 20 }, "frequency", TextFormat("%5.3f", frequency), frequency, 0.0f, 5.0f);
-        goal_frequency = GuiSliderBar((Rectangle){ 125, 70, 120, 20 }, "goal frequency", TextFormat("%5.3f", goal_frequency), goal_frequency, 0.0f, 5.0f);
+        GuiSliderBar((Rectangle){ 125, 20, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), &halflife, 0.0f, 4.0f);
+        GuiSliderBar((Rectangle){ 125, 45, 120, 20 }, "frequency", TextFormat("%5.3f", frequency), &frequency, 0.0f, 5.0f);
+        GuiSliderBar((Rectangle){ 125, 70, 120, 20 }, "goal frequency", TextFormat("%5.3f", goal_frequency), &goal_frequency, 0.0f, 5.0f);
        
         energy = spring_energy(x, v, frequency, screenHeight/2.0f, 0.0f, 0.01f);
         
-        energy = GuiSliderBar((Rectangle){ 400, 20, 120, 20 }, "energy", TextFormat("%4.1f", energy), energy, 0.0f, 160.0f);        
+        GuiSliderBar((Rectangle){ 400, 20, 120, 20 }, "energy", TextFormat("%4.1f", energy), &energy, 0.0f, 160.0f);        
         
         // Update Spring
         
