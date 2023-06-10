@@ -1,42 +1,37 @@
 #include "common.h"
 
+#include <float.h>
+
 //--------------------------------------
 
-void inertialize_transition(
-    float& off_x, float& off_v, 
-    float src_x, float src_v,
-    float dst_x, float dst_v)
-{
-    off_x = (src_x + off_x) - dst_x;
-    off_v = (src_v + off_v) - dst_v;
-}
-
-void inertialize_update(
-    float& out_x, float& out_v,
-    float& off_x, float& off_v,
-    float in_x, float in_v,
+void extrapolate(
+    float& x,
+    float& v,
+    float dt,
     float halflife,
-    float dt)
+    float eps = 1e-5f)
 {
-    decay_spring_damper_exact(off_x, off_v, halflife, dt);
-    out_x = in_x + off_x;
-    out_v = in_v + off_v;
+    float y = 0.69314718056f / (halflife + eps);
+    x = x + (v / (y + eps)) * (1.0f - fast_negexp(y * dt));
+    v = v * fast_negexp(y * dt);
 }
 
-void inertialize_function(float& g, float& gv, float t, float freq, float amp, float phase, float off)
+void extrapolate_function(float& g, float& gv, float t, float freq, float amp, float phase, float off)
 {
     g = amp * sin(t * freq + phase) + off;
     gv = amp * freq * cos(t * freq + phase);
 }
 
-void inertialize_function1(float& g, float& gv, float t)
+void extrapolate_function1(float& g, float& gv, float t)
 {
-    inertialize_function(g, gv, t, 2.0f * M_PI * 1.25, 74.0, 23.213123, 254);
-}
-
-void inertialize_function2(float& g, float& gv, float t)
-{
-    inertialize_function(g, gv, t, 2.0f * M_PI * 3.4, 28.0, 912.2381, 113);
+    float g0, gv0, g1, gv1, g2, gv2;
+  
+    extrapolate_function(g0, gv0, t, 2.0f * M_PI * 1.5, 40.0, 23.213123, 0);
+    extrapolate_function(g1, gv1, t, 2.0f * M_PI * 3.4, 14.0, 912.2381, 0);
+    extrapolate_function(g2, gv2, t, 2.0f * M_PI * 0.4, 21.0, 452.2381, 0);
+    
+    g = 200 + g0 + g1 + g2;
+    gv = gv0 + gv1 + gv2;
 }
 
 //--------------------------------------
@@ -58,7 +53,7 @@ int main(void)
     const int screenWidth = 640;
     const int screenHeight = 360;
 
-    InitWindow(screenWidth, screenHeight, "raylib [springs] example - inertialization");
+    InitWindow(screenWidth, screenHeight, "raylib [springs] example - extrapolation");
 
     // Init Variables
 
@@ -68,13 +63,11 @@ int main(void)
     float g = x;
     float goalOffset = 600;
 
-    float halflife = 0.1f;
+    float halflife = 0.2f;
     float dt = 1.0 / 60.0f;
     float timescale = 240.0f;
     
-    float off_x = 0.0;
-    float off_v = 0.0;
-    bool inertialize_toggle = false;
+    bool extrapolation_toggle = false;
 
     SetTargetFPS(1.0f / dt);
 
@@ -98,49 +91,34 @@ int main(void)
             g_prev[i] = g_prev[i - 1];
         }
         
-        if (GuiButton((Rectangle){ 100, 75, 120, 20 }, "Transition"))
+        //if (GuiButton((Rectangle){ 100, 75, 120, 20 }, "Extrapolate"))
+        if (GuiButton((Rectangle){ 100, 45, 120, 20 }, "Extrapolate"))
         {
-            inertialize_toggle = !inertialize_toggle;
-            
-            float src_x = g_prev[1];
-            float src_v = (g_prev[1] - g_prev[2]) / (t_prev[1] - t_prev[2]);
-            float dst_x, dst_v;
-            
-            if (inertialize_toggle)
-            {
-                inertialize_function1(dst_x, dst_v, t);                    
-            }
-            else
-            {
-                inertialize_function2(dst_x, dst_v, t);
-            }
-        
-            inertialize_transition(
-                off_x, off_v,
-                src_x, src_v,
-                dst_x, dst_v);
+            extrapolation_toggle = !extrapolation_toggle;
         }
         
-        GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), &halflife, 0.0f, 1.0f);
-        GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "dt", TextFormat("%5.3f", dt), &dt, 1.0 / 60.0f, 0.1f);
+        GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), &halflife, 0.0f, 0.5f);
+        //GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "dt", TextFormat("%5.3f", dt), &dt, 1.0 / 60.0f, 0.1f);
         
         // Update Spring
         
-        SetTargetFPS(1.0f / dt);
+        //SetTargetFPS(1.0f / dt);
         
         t += dt;
         
         float gv = 0.0f;
-        if (inertialize_toggle)
+
+        extrapolate_function1(g, gv, t);
+        
+        if (extrapolation_toggle)
         {
-            inertialize_function1(g, gv, t);
+            extrapolate(x, v, dt, halflife);
         }
         else
         {
-            inertialize_function2(g, gv, t);
+            x = g;
+            v = gv;
         }
-        
-        inertialize_update(x, v, off_x, off_v, g, gv, halflife, dt);
         
         x_prev[0] = x;
         v_prev[0] = v;      

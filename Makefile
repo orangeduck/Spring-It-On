@@ -21,6 +21,7 @@ SOURCE = \
     controller.c \
     inertialization.c \
     deadblending.c \
+    extrapolation.c \
     tracking.c \
     interpolation.c \
     resonance.c \

@@ -96,9 +96,9 @@ int main(void)
         
         // Timed Spring
         
-        halflife = GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), halflife, 0.0f, 1.0f);
-        goal_velocity = GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "goal velocity", TextFormat("%5.3f", goal_velocity), goal_velocity, 0.0f, 500.0f);
-        apprehension = GuiSliderBar((Rectangle){ 100, 75, 120, 20 }, "apprehension", TextFormat("%5.3f", apprehension), apprehension, 0.0f, 5.0f);
+        GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), &halflife, 0.0f, 1.0f);
+        GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "goal velocity", TextFormat("%5.3f", goal_velocity), &goal_velocity, 0.0f, 500.0f);
+        GuiSliderBar((Rectangle){ 100, 75, 120, 20 }, "apprehension", TextFormat("%5.3f", apprehension), &apprehension, 0.0f, 5.0f);
         
         // Update Spring
         

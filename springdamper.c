@@ -63,12 +63,12 @@ int main(void)
         
         // Spring Damper
         
-        //stiffness = GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "stiffness", TextFormat("%5.3f", stiffness), stiffness, 0.01f, 30.0f);
-        // frequency = GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "frequency", TextFormat("%5.3f", frequency), frequency, 0.0f, 3.0f);
-        damping_ratio = GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "damping ratio", TextFormat("%5.3f", damping_ratio), damping_ratio, 0.0f, 2.0f);
-        //damping = GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "damping", TextFormat("%5.3f", damping), damping, 0.01f, 30.0f);
-        halflife = GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), halflife, 0.0f, 1.0f);
-        dt = GuiSliderBar((Rectangle){ 100, 70, 120, 20 }, "dt", TextFormat("%5.3f", dt), dt, 1.0 / 60.0f, 0.1f);
+        //GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "stiffness", TextFormat("%5.3f", stiffness), &stiffness, 0.01f, 30.0f);
+        //GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "frequency", TextFormat("%5.3f", frequency), &frequency, 0.0f, 3.0f);
+        GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "damping ratio", TextFormat("%5.3f", damping_ratio), &damping_ratio, 0.0f, 2.0f);
+        //GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "damping", TextFormat("%5.3f", damping), &damping, 0.01f, 30.0f);
+        GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), &halflife, 0.0f, 1.0f);
+        GuiSliderBar((Rectangle){ 100, 70, 120, 20 }, "dt", TextFormat("%5.3f", dt), &dt, 1.0 / 60.0f, 0.1f);
         
         // Update Spring
         

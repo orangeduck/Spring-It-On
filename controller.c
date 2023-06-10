@@ -105,10 +105,9 @@ int main(void)
             trajy_prev[i] = trajy_prev[i - 1];
         }
         
-        
         // Controller
         
-        halflife = GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), halflife, 0.0f, 1.0f);
+        GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), &halflife, 0.0f, 1.0f);
 
         // Update Spring
         

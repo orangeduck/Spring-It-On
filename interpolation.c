@@ -76,8 +76,8 @@ int main(void)
         
         // Interpolation
         
-        frequency = GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "frequency", TextFormat("%5.3f", frequency), frequency, 0.0f, 3.0f);
-        halflife = GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), halflife, 0.0f, 1.0f);
+        GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "frequency", TextFormat("%5.3f", frequency), &frequency, 0.0f, 3.0f);
+        GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), &halflife, 0.0f, 1.0f);
         
         BeginDrawing();
         
