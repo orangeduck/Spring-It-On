@@ -411,3 +411,14 @@ void decay_spring_damper_exact(
 
 //--------------------------------------
 
+float halflife_to_lag(float halflife)
+{
+    return halflife / 0.69314718056f;
+}
+
+float lag_to_halflife(float lag)
+{
+    return lag * 0.69314718056f;
+}
+
+//--------------------------------------

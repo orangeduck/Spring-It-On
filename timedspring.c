@@ -9,14 +9,13 @@ void timed_spring_damper_exact(
     float x_goal,
     float t_goal,
     float halflife,
-    float dt,
-    float apprehension = 2.0f)
+    float dt)
 {
     float min_time = t_goal > dt ? t_goal : dt;
     
     float v_goal = (x_goal - xi) / min_time;
     
-    float t_goal_future = dt + apprehension * halflife;
+    float t_goal_future = halflife_to_lag(halflife);
     float x_goal_future = t_goal_future < t_goal ?
         xi + v_goal * t_goal_future : x_goal;
         
@@ -61,7 +60,6 @@ int main(void)
 
     float goal_time = 1.0f;
     float ti = 0.0;
-    float apprehension = 2.0f;
 
     float xi = x;
 
@@ -102,7 +100,6 @@ int main(void)
         
         GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), &halflife, 0.0f, 1.0f);
         GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "timer reset", TextFormat("%5.3f", goal_time), &goal_time, 0.0f, 3.0f);
-        GuiSliderBar((Rectangle){ 100, 75, 120, 20 }, "apprehension", TextFormat("%5.3f", apprehension), &apprehension, 0.0f, 5.0f);
         
         GuiLabel((Rectangle){ 525, 20, 120, 20 }, TextFormat("Timer: %4.2f", ti));
         

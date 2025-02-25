@@ -10,12 +10,11 @@ void velocity_spring_damper_exact(
     float v_goal,
     float halflife,
     float dt,
-    float apprehension = 2.0f,
     float eps = 1e-5f)
 {
     float x_diff = ((x_goal - xi) > 0.0f ? 1.0f : -1.0f) * v_goal;
     
-    float t_goal_future = dt + apprehension * halflife;
+    float t_goal_future = halflife_to_lag(halflife);
     float x_goal_future = fabs(x_goal - xi) > t_goal_future * v_goal ?
         xi + x_diff * t_goal_future : x_goal;
     
@@ -59,7 +58,6 @@ int main(void)
     float timescale = 240.0f;
 
     float goal_velocity = 100.0f;
-    float apprehension = 2.0f;
 
     float xi = x;
 
@@ -98,7 +96,6 @@ int main(void)
         
         GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "halflife", TextFormat("%5.3f", halflife), &halflife, 0.0f, 1.0f);
         GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "goal velocity", TextFormat("%5.3f", goal_velocity), &goal_velocity, 0.0f, 500.0f);
-        GuiSliderBar((Rectangle){ 100, 75, 120, 20 }, "apprehension", TextFormat("%5.3f", apprehension), &apprehension, 0.0f, 5.0f);
         
         // Update Spring
         
