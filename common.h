@@ -29,6 +29,11 @@ float min(float x, float y)
     return x < y ? x : y;
 }
 
+float sign(float x)
+{
+    return x > 0.0f ? 1.0f : x < 0.0f ? -1.0f : 0.0f;
+}
+
 //--------------------------------------
 
 float damper(float x, float g, float factor)
