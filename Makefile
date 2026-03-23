@@ -28,7 +28,8 @@ SOURCE = \
     timedspring.c \
     velocityspring.c \
     doublespring.c \
-    inertialeasing.c
+    inertialeasing.c \
+    cubiceasing.c
 	
 EXECUTABLE = $(SOURCE:.c=$(EXT))
 
