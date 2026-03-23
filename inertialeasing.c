@@ -1,5 +1,7 @@
 #include "common.h"
 
+// Inspired by: https://openprocessing.org/sketch/1684527
+
 enum
 {
     HISTORY_MAX = 256
@@ -8,121 +10,51 @@ enum
 float x_prev[HISTORY_MAX];
 float t_prev[HISTORY_MAX];
 
-float cubic_easing(float t)
+// Scaled smoothstep including negative section
+float smoothstep(float t, float s)
 {
-    // We allow it to go less than zero
-    t = min(t, 1.0f);
-    return 3*t*t - 2*t*t*t;
+    return s * (t > 1.0f ? 1.0f : 3*t*t - 2*t*t*t);
 }
 
-float cubic_easing_dt(float t)
+// Scaled smoothstep derivative including negative section
+float smoothstep_dt(float t, float s)
 {
-    t = min(t, 1.0f);
-    return 6*t - 6*t*t;
+    return s * (t > 1.0f ? 0.0f : 6*t - 6*t*t);
 }
 
-float cubic_easing_vmax() { return 1.5f; }              // Maximum velocity
-float cubic_easing_vmax_time() { return 0.5f; }         // Time at maximum velocity
-float cubic_easing_amin() { return -6.0f; }             // Minimum acceleration
-float cubic_easing_tmin() { return -sqrtf(1.0f/3.0f); } // Time where f(t) = 1 and t < 0
-
-float cubic_easing_minimize(float x, float v, float lower, float upper, float eps = 0.000001f)
+// Solve for smoothstep parameters `t` and `s` given new target `x` and velocity `v`
+void smoothstep_solve(
+    float& t, float& s, float x, float v, float overshoot = 0.05f, float eps=1e-8f)
 {
-    float phi = (1.0f + sqrtf(5.0f)) / 2.0f;
-    
-    int iterations = 1000;
-    
-    for (int i = 0; i < iterations; i++)
-    {
-        float xa = lerp(lower, upper, 1.0f / (phi + 1.0f));
-        float xb = lerp(lower, xa, 1.0f + (1.0f / phi));
-        
-        float vta = cubic_easing_dt(xa);
-        float sa = v / vta;
-        float fa = fabsf((sa * sa * sign(sa) * (1.0f - cubic_easing(xa))) - x);
-        
-        float vtb = cubic_easing_dt(xb);
-        float sb = v / vtb;
-        float fb = fabsf((sb * sb * sign(sb) * (1.0f - cubic_easing(xb))) - x);
-        
-        if (fa < fb)
-        {
-            upper = xb;
-        }
-        else
-        {
-            lower = xa;
-        }
-        
-        if (upper - lower < eps) { break; }
-    }
-    
-    return (lower + upper) / 2.0f;
-}
-
-void cubic_easing_solve(float& t, float& s, float x, float v)
-{
-    // If velocity is zero start from time zero
-    if (v == 0.0f)
+    // If velocity is zero start from time zero with scale to match `x`
+    if (fabsf(v) < 1e-8f)
     {
         t = 0.0f;
-        s = sqrtf(fabsf(x)) * sign(x);
+        s = x;
         return;
     }
     
-    // If x is negative then invert signs and re-solve
+    // If `x` is negative then invert signs and re-solve
     if (x < 0.0)
     {
-        cubic_easing_solve(t, s, -x, -v);
+        smoothstep_solve(t, s, -x, -v);
         s = -s;
         return;
     }
     
-    // x is now positive and v is non-zero.
+    // Find the possible times that solve for the given `x` and `v`
+    float t0 = (v - 6*x + sqrtf(max((6*x - v)*(6*x - v) + 8*v*v, eps))) / (4*v);
+    float t1 = (v - 6*x - sqrtf(max((6*x - v)*(6*x - v) + 8*v*v, eps))) / (4*v);
     
-    // If v is in the opposite direction to x we start the time at below zero.
-    // Find the best fitting time from below zero and where f(t) = 1 (where t < 0)
-    if (v < 0)
-    {
-        t = cubic_easing_minimize(x, v, cubic_easing_tmin(), 0.0);
-        s = v / cubic_easing_dt(t); // Re-scale so the velocity matches
-        return;
-    }
-    
-    // Check if x is less than the minimum distance travelled at current speed 
-    // `v` when decelerating continuously at minimum acceleration. This gives us 
-    // the case where we must over-shoot. 
-    if (x < 0.5f * (v*v) / -cubic_easing_amin())
-    {
-        t = cubic_easing_minimize(x, v, -100.0f, cubic_easing_tmin());
-        s = v / cubic_easing_dt(t); // Re-scale so the velocity matches
-        return;
-    }
-    
-    // When the easing function is scaled by s^2 the derivative is scaled by 
-    // `s`. Thus the maximum velocity after the scaling is `vmax * s`.
-    //
-    // The maximum velocity must be more than the current velocity
-    // so the minimum scaling factor `smin` is obtained by `vmax * smin = v`.
-    
-    float smin = v / cubic_easing_vmax();
-    
-    if (smin * smin * (1.0f - cubic_easing_vmax()) < x)
-    {
-        // Search bottom section of easing function
-        t = cubic_easing_minimize(x, v, 0.0f, cubic_easing_vmax_time());
-        s = v / cubic_easing_dt(t);
-        return;
-    }
-    else
-    {
-        // Search top section of easing function
-        t = cubic_easing_minimize(x, v, cubic_easing_vmax_time(), 1.0f);
-        s = v / cubic_easing_dt(t); // Re-scale so the velocity matches
-        return;
-    }
-}
+    // Overshoot if the alternative time is between -0.5f and -(0.5f + overshoot)
+    t = -0.5f > t1 && t1 > -(0.5f + overshoot) ? t1 : t0;
 
+    // Find the un-scaled velocity at the fitted time
+    float vt = smoothstep_dt(t, 1.0f);        
+
+    // Find the scaling factor so that the velocity at the fitted time matches
+    s = fabsf(vt) < eps ? 0.0f : v / vt;
+}
 
 int main(void)
 {
@@ -138,15 +70,19 @@ int main(void)
     float t = 0.0;
     float x = screenHeight / 2.0f;
     float g = x;
-    float goalOffset = 600;
+    float goalOffset = 400;
 
-    float blendtime = 0.1f;
+    float blendtime = 1.0f;
+    float overshoot = 0.05f;
     float dt = 1.0 / 60.0f;
     float timescale = 240.0f;
     
-    float ease_t = 0.0f;
-    float ease_s = 0.0f;
-    float ease_o = x;
+    float et = 0.0f;
+    float es = 0.0f;
+    float eo = x;
+
+    bool draw_axis = false;
+    bool draw_fit = true;
 
     SetTargetFPS(1.0f / dt);
 
@@ -166,35 +102,39 @@ int main(void)
             t_prev[i] = t_prev[i - 1];
         }
 
-        // Get Goal
+        // UI
         
+        GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "blendtime", TextFormat("%5.3f", blendtime), &blendtime, 0.0f, 2.0f);
+        GuiSliderBar((Rectangle){ 100, 50, 120, 20 }, "overshoot", TextFormat("%5.3f", overshoot), &overshoot, 0.0f, 0.5f);
+        GuiDrawText(TextFormat("t=% 5.2f", et), (Rectangle){ 275, 20, 120, 20 }, TEXT_ALIGN_LEFT, DARKGRAY);
+        GuiDrawText(TextFormat("s=% 5.2f", es), (Rectangle){ 325, 20, 120, 20 }, TEXT_ALIGN_LEFT, DARKGRAY);
+        GuiCheckBox((Rectangle){ 400, 20, 20, 20 }, "draw fit", &draw_fit);
+        GuiCheckBox((Rectangle){ 500, 20, 20, 20 }, "draw axis", &draw_axis);
+        
+        // Check if target changed
         if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
         {
-            float g_new = GetMousePosition().y;
-            if (g != g_new)
+            if (g != GetMousePosition().y)
             {
-                g = g_new;
-                cubic_easing_solve(ease_t, ease_s, g - x, ease_s * cubic_easing_dt(ease_t));
-                ease_o = x - ease_s*ease_s*sign(ease_s) * cubic_easing(ease_t);
-                printf("Solve %f!\n", ease_s);
+                // Update Target
+                g = GetMousePosition().y;
+                
+                // Solve for smoothstep parameters `s` and `t`
+                smoothstep_solve(et, es, g - x, smoothstep_dt(et, es), overshoot);
+                
+                // Set the offset to the difference between the target and current eased value
+                eo = x - smoothstep(et, es);
             }
         }
-        
-        // Inertial Easing
-        
-        GuiSliderBar((Rectangle){ 100, 20, 120, 20 }, "blendtime", TextFormat("%5.3f", blendtime), &blendtime, 0.0f, 1.0f);
-        //GuiSliderBar((Rectangle){ 100, 45, 120, 20 }, "dt", TextFormat("%5.3f", dt), &dt, 1.0 / 60.0f, 0.1f);
 
-        // Update Spring
+        // Update the easing time
+        et += dt / max(blendtime, 1e-4f);
         
-        //SetTargetFPS(1.0f / dt);
+        // Update the eased value
+        x = eo + smoothstep(et, es);
         
+        // Update Time
         t += dt;
-
-        // Update Inertial Easing
-        
-        ease_t = min(ease_t + dt / fabsf(ease_s) / blendtime, 1.0f);
-        x = ease_o + ease_s*ease_s*sign(ease_s) * cubic_easing(ease_t);
         
         x_prev[0] = x;
         t_prev[0] = t;
@@ -215,6 +155,37 @@ int main(void)
                 DrawCircleV(x_start, 2, BLUE);
             }
 
+            if (draw_fit)
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    float pt0 = ((i + 0) / 100.0f) * 2.0f - 1.0f;
+                    float pt1 = ((i + 1) / 100.0f) * 2.0f - 1.0f;
+                    
+                    float py0 = eo + smoothstep(et + pt0, es);
+                    float py1 = eo + smoothstep(et + pt1, es);
+                    
+                    Vector2 p_start = { goalOffset + pt0 * timescale, py0 };
+                    Vector2 p_stop = { goalOffset + pt1 * timescale, py1 };
+                    
+                    DrawLineV(p_start, p_stop, PURPLE);
+                }     
+            }
+
+            if (draw_axis)
+            {
+                Vector2 yaxis_start = { goalOffset - et * timescale, 0 };
+                Vector2 yaxis_stop = { goalOffset - et * timescale, screenHeight };
+                DrawLineV(yaxis_start, yaxis_stop, Fade(GRAY, 0.5f));
+                
+                Vector2 laxis_start = { 0, eo + smoothstep(0.0, es) };
+                Vector2 laxis_stop = { screenWidth, eo + smoothstep(0.0, es) };
+                DrawLineV(laxis_start, laxis_stop, Fade(GRAY, 0.5f));
+
+                Vector2 uaxis_start = { 0, eo + smoothstep(1.0, es) };
+                Vector2 uaxis_stop = { screenWidth, eo + smoothstep(1.0, es) };
+                DrawLineV(uaxis_start, uaxis_stop, Fade(GRAY, 0.5f));
+            }
             
         EndDrawing();
         
